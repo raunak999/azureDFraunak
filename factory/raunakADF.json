@@ -1,0 +1,17 @@
+{
+	"name": "raunakADF",
+	"properties": {
+		"globalParameters": {
+			"databaseName": {
+				"type": "string",
+				"value": "raunakdb"
+			}
+		}
+	},
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "e90249c9-7a33-4a1a-9d84-80e2ecc09219",
+		"tenantId": "f06dc795-ecd8-4a84-bbb1-8efa05137a72"
+	}
+}

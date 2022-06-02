@@ -1,0 +1,42 @@
+{
+	"name": "sql_generic_db",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "raunakSQLDB",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"databaseName": {
+					"value": "@dataset().databaseName",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"schemaName": {
+				"type": "string",
+				"defaultValue": "saleslt"
+			},
+			"tableName": {
+				"type": "string"
+			},
+			"databaseName": {
+				"type": "string",
+				"defaultValue": "raunakdb"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().schemaName",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().tableName",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

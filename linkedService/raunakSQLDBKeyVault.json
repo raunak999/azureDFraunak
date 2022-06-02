@@ -1,0 +1,19 @@
+{
+	"name": "raunakSQLDBKeyVault",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=raunakserver.database.windows.net;Initial Catalog=raunakdb;User ID=raunak",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "raunak_Azure_Key_vault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "raunakDBpassword"
+			}
+		}
+	}
+}

@@ -1,0 +1,26 @@
+{
+	"name": "Storage_Event_trigger",
+	"properties": {
+		"description": "This is an example for Storage Event Trigger",
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "Pipeline_if_example",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/landing/blobs/ProductD",
+			"blobPathEndsWith": ".txt",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/3a3dc6a1-7fae-4162-b46c-d80bda068e0e/resourceGroups/raunakdoesAZURE/providers/Microsoft.Storage/storageAccounts/raunak210299",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

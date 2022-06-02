@@ -1,0 +1,25 @@
+{
+	"name": "Schedule_Trigger_Daily",
+	"properties": {
+		"description": "This is an example of Schedule Trigger.",
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "Pipeline_if_example",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 1,
+				"startTime": "2022-05-29T04:47:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}

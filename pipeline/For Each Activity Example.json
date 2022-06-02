@@ -1,0 +1,110 @@
+{
+	"name": "For Each Activity Example",
+	"properties": {
+		"description": "This is like similar to For loop concept where data has to be copied for multiple tables and the same pipeline can be reused.",
+		"activities": [
+			{
+				"name": "ForEach_Activity_Example",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@createArray('Customer','Product','CustomerAddress','ProductDescription')",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy data of multiple tables",
+							"description": "Every time the loop runs different table data will be copied (whatever we have declared in array input. ",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "sql_generic_db",
+									"type": "DatasetReference",
+									"parameters": {
+										"schemaName": "saleslt",
+										"tableName": {
+											"value": "@item()",
+											"type": "Expression"
+										},
+										"databaseName": "raunakdb"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "azureADLSDataSet",
+									"type": "DatasetReference",
+									"parameters": {
+										"folderName": {
+											"value": "@concat(item(),'-For Each Activity example')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "Fail Activity",
+				"description": "This activity lets us create some customized error/exception.",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "ForEach_Activity_Example",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "No Table: Table doesn't exist in the DB",
+					"errorCode": "1001"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2022-05-24T04:57:36Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

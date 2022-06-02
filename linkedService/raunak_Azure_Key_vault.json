@@ -1,0 +1,11 @@
+{
+	"name": "raunak_Azure_Key_vault",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://raunakKeyVault.vault.azure.net/"
+		}
+	}
+}
