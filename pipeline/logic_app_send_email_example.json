@@ -1,0 +1,118 @@
+{
+	"name": "logic_app_send_email_example",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "sql_generic_db",
+						"type": "DatasetReference",
+						"parameters": {
+							"schemaName": "saleslt",
+							"tableName": "customer",
+							"databaseName": "raunakdb"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "azureADLSDataSet",
+						"type": "DatasetReference",
+						"parameters": {
+							"folderName": "logic_app_example_customer"
+						}
+					}
+				]
+			},
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Copy data1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://prod-10.centralus.logic.azure.com:443/workflows/6c963156bf984a188dbf32948bf8dba2/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=9Pdzq69xjsKiJFHQpO82UgGm2_UjveIu8k-_oOxcoHo",
+					"method": "POST",
+					"body": "{\n    \n        \"adfName\": \"raunakADF\",\n        \"pipelineName\": \"logic_app_send_email_example,\n        \"Status\": \"Passed\"       \n}"
+				}
+			},
+			{
+				"name": "Web2",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Copy data1",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://prod-10.centralus.logic.azure.com:443/workflows/6c963156bf984a188dbf32948bf8dba2/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=9Pdzq69xjsKiJFHQpO82UgGm2_UjveIu8k-_oOxcoHo",
+					"method": "POST",
+					"body": "{\n    \n        \"adfName\": \"raunakADF\",\n        \"pipelineName\": \"logic_app_send_email_example,\n        \"Status\": \"Failed\"       \n}"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
