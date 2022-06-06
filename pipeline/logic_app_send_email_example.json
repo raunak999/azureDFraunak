@@ -84,7 +84,11 @@
 				"typeProperties": {
 					"url": "https://prod-10.centralus.logic.azure.com:443/workflows/6c963156bf984a188dbf32948bf8dba2/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=9Pdzq69xjsKiJFHQpO82UgGm2_UjveIu8k-_oOxcoHo",
 					"method": "POST",
-					"body": "{\n    \n        \"adfName\": \"raunakADF\",\n        \"pipelineName\": \"logic_app_send_email_example,\n        \"Status\": \"Passed\"       \n}"
+					"body": {
+						"adfName": "raunakADF",
+						"pipelineName": "logic_app_send_email_example",
+						"Status": "Passed"
+					}
 				}
 			},
 			{
@@ -109,7 +113,11 @@
 				"typeProperties": {
 					"url": "https://prod-10.centralus.logic.azure.com:443/workflows/6c963156bf984a188dbf32948bf8dba2/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=9Pdzq69xjsKiJFHQpO82UgGm2_UjveIu8k-_oOxcoHo",
 					"method": "POST",
-					"body": "{\n    \n        \"adfName\": \"raunakADF\",\n        \"pipelineName\": \"logic_app_send_email_example,\n        \"Status\": \"Failed\"       \n}"
+					"body": {
+						"adfName": "raunakADF",
+						"pipelineName": "logic_app_send_email_example",
+						"Status": "Failed"
+					}
 				}
 			}
 		],
