@@ -1,0 +1,6 @@
+{
+	"databaseName": {
+		"type": "string",
+		"value": "raunakdb"
+	}
+}

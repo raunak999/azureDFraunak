@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "raunakADF"
+		},
+		"raunakADLS_accountKey": {
+			"value": ""
+		},
+		"raunakSQLDB_connectionString": {
+			"value": ""
+		},
+		"raunakSQLDBKeyVault_connectionString": {
+			"value": ""
+		},
+		"REST_LS_properties_typeProperties_url": {
+			"value": "https://restcountries.com/v2/all"
+		},
+		"raunakADLS_properties_typeProperties_url": {
+			"value": "https://raunak210299.dfs.core.windows.net"
+		},
+		"raunak_Azure_Key_vault_properties_typeProperties_baseUrl": {
+			"value": "https://raunakKeyVault.vault.azure.net/"
+		},
+		"Storage_Event_trigger_properties_typeProperties_scope": {
+			"value": "/subscriptions/3a3dc6a1-7fae-4162-b46c-d80bda068e0e/resourceGroups/raunakdoesAZURE/providers/Microsoft.Storage/storageAccounts/raunak210299"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

@@ -1,0 +1,111 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "raunakADF"
+		},
+		"raunakADLS_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'raunakADLS'"
+		},
+		"raunakSQLDB_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'raunakSQLDB'"
+		},
+		"raunakSQLDBKeyVault_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'raunakSQLDBKeyVault'"
+		},
+		"REST_LS_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://restcountries.com/v2/all"
+		},
+		"raunakADLS_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://raunak210299.dfs.core.windows.net"
+		},
+		"raunak_Azure_Key_vault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://raunakKeyVault.vault.azure.net/"
+		},
+		"Storage_Event_trigger_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/3a3dc6a1-7fae-4162-b46c-d80bda068e0e/resourceGroups/raunakdoesAZURE/providers/Microsoft.Storage/storageAccounts/raunak210299"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "raunakADF_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"raunakADLS_accountKey": {
+						"value": "[parameters('raunakADLS_accountKey')]"
+					},
+					"raunakSQLDB_connectionString": {
+						"value": "[parameters('raunakSQLDB_connectionString')]"
+					},
+					"raunakSQLDBKeyVault_connectionString": {
+						"value": "[parameters('raunakSQLDBKeyVault_connectionString')]"
+					},
+					"REST_LS_properties_typeProperties_url": {
+						"value": "[parameters('REST_LS_properties_typeProperties_url')]"
+					},
+					"raunakADLS_properties_typeProperties_url": {
+						"value": "[parameters('raunakADLS_properties_typeProperties_url')]"
+					},
+					"raunak_Azure_Key_vault_properties_typeProperties_baseUrl": {
+						"value": "[parameters('raunak_Azure_Key_vault_properties_typeProperties_baseUrl')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "raunakADF_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"Storage_Event_trigger_properties_typeProperties_scope": {
+						"value": "[parameters('Storage_Event_trigger_properties_typeProperties_scope')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'raunakADF_ArmTemplate_0')]"
+			]
+		}
+	]
+}
