@@ -15,11 +15,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": {
-					"value": "@dataset().FileName",
-					"type": "Expression"
-				},
-				"folderPath": "adf_prac_examples/eg_1",
+				"folderPath": "adf_prac_examples/eg_1/input",
 				"fileSystem": "datastore"
 			},
 			"columnDelimiter": ",",
