@@ -11,6 +11,9 @@
 		"AzureSqlDatabase1_connectionString": {
 			"value": ""
 		},
+		"SQL_DB_LS_connectionString": {
+			"value": ""
+		},
 		"AzureDataLakeStorage1_properties_typeProperties_url": {
 			"value": "https://azurestore99.dfs.core.windows.net/"
 		},
