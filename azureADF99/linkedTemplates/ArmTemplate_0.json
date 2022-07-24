@@ -807,7 +807,7 @@
 					"recurrence": {
 						"frequency": "Day",
 						"interval": 1,
-						"startTime": "2022-07-24T06:22:00Z",
+						"startTime": "2022-07-24T06:31:00Z",
 						"timeZone": "UTC",
 						"schedule": {}
 					}
