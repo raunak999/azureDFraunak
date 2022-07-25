@@ -1,5 +1,5 @@
 {
-	"name": "pipeline4",
+	"name": "fetch_trigger_run_info_ofPipeline",
 	"properties": {
 		"activities": [
 			{

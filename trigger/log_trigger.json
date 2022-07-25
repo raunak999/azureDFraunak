@@ -6,7 +6,7 @@
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "pipeline4",
+					"referenceName": "fetch_trigger_run_info_ofPipeline",
 					"type": "PipelineReference"
 				}
 			}
