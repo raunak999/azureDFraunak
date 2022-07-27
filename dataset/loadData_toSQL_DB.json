@@ -1,0 +1,16 @@
+{
+	"name": "loadData_toSQL_DB",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "azureSQL_DB",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "SalesRecord"
+		}
+	}
+}
