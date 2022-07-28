@@ -55,7 +55,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select max(ShipDate) from  [dbo].[SalesRecord];\n\n",
+						"sqlReaderQuery": "select max(ShipDate) as LastShipDate from  [dbo].[SalesRecord];\n\n",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -89,7 +89,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "@concat('select * from pipeline().parameters.dbName.pipeline().parameters.tableName where ShipDate >',\nactivity('get HIghWaterMarkFIleDate').output.firstRow.Prop_0)",
+							"value": "@concat('select * from dbo.SalesRecord where ShipDate >',\nactivity('get HIghWaterMarkFIleDate').output.firstRow.Prop_0)",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -130,14 +130,6 @@
 				]
 			}
 		],
-		"parameters": {
-			"dbName": {
-				"type": "string"
-			},
-			"tableName": {
-				"type": "string"
-			}
-		},
 		"annotations": []
 	}
 }
