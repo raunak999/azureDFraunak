@@ -1,0 +1,29 @@
+{
+	"name": "DS_highWterMark",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "highWaterMark_file.txt",
+				"folderPath": "highwaterMarkexample/input",
+				"fileSystem": "datastore"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": false,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "1900-02-21 00:00:00",
+				"type": "String"
+			}
+		]
+	}
+}
