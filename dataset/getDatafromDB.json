@@ -1,0 +1,80 @@
+{
+	"name": "getDatafromDB",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SQL_DB_LS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Region",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Country",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ItemType",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SalesChannel",
+				"type": "nvarchar"
+			},
+			{
+				"name": "OrderPriority",
+				"type": "nvarchar"
+			},
+			{
+				"name": "OrderDate",
+				"type": "date"
+			},
+			{
+				"name": "OrderID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ShipDate",
+				"type": "date"
+			},
+			{
+				"name": "UnitsSold",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "UnitPrice",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "UnitCost",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "TotalRevenue",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "TotalCost",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "TotalProfit",
+				"type": "float",
+				"precision": 15
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "SalesRecord"
+		}
+	}
+}
