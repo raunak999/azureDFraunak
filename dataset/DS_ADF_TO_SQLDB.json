@@ -1,0 +1,16 @@
+{
+	"name": "DS_ADF_TO_SQLDB",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_AzureSQLDB",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "playerInfo"
+		}
+	}
+}
