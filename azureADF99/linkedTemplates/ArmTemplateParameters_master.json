@@ -11,7 +11,13 @@
 		"AzureSqlDatabase1_connectionString": {
 			"value": ""
 		},
+		"LS_AzureSQLDB_connectionString": {
+			"value": ""
+		},
 		"SQL_DB_LS_connectionString": {
+			"value": ""
+		},
+		"azureSQL_DB_connectionString": {
 			"value": ""
 		},
 		"AzureDataLakeStorage1_properties_typeProperties_url": {
