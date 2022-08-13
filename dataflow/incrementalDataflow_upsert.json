@@ -26,6 +26,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_ADF_TO_SQLDB",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
 				}
 			],
 			"transformations": [
@@ -37,6 +44,9 @@
 				},
 				{
 					"name": "split1"
+				},
+				{
+					"name": "alterRow1"
 				}
 			],
 			"scriptLines": [
@@ -55,7 +65,9 @@
 				"          Name as string,",
 				"          Age as integer,",
 				"          Country as string,",
-				"          Team as string",
+				"          Team as string,",
+				"          lastModifiedDate as date,",
+				"          hashKey as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -67,9 +79,10 @@
 				"     multiple: false,",
 				"     pickup: 'any',",
 				"     broadcast: 'auto')~> Join2DataSource",
-				"Join2DataSource split(!isNull(newFileInput@playerID)&&notEquals(hashKey, hashKeyNew),",
-				"     isNull(newFileInput@playerID),",
+				"Join2DataSource split(!isNull(existingDatainDB@playerID)&&notEquals(hashKey, toString(hashKeyNew)),",
+				"     isNull(existingDatainDB@playerID),",
 				"     disjoint: false) ~> split1@(Update, Insert, Default)",
+				"split1@Update alterRow(upsertIf(true())) ~> alterRow1",
 				"split1@Insert sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -97,7 +110,26 @@
 				"          Team = split1@Insert@Team,",
 				"          lastModifiedDate = lastModifiedDateNew,",
 				"          hashKey = hashKeyNew",
-				"     )) ~> sink1"
+				"     )) ~> sink1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          playerID as integer,",
+				"          Name as string,",
+				"          Age as integer,",
+				"          Country as string,",
+				"          Team as string,",
+				"          lastModifiedDate as date,",
+				"          hashKey as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink2"
 			]
 		}
 	}
