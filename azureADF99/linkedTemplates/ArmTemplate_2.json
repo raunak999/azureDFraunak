@@ -13,6 +13,195 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/dataIngestion_Stage1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_ADLS_TO_ADF",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DS_ADF_TO_SQLDB",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          playerID as string,",
+						"          Name as string,",
+						"          Age as string,",
+						"          Country as string,",
+						"          Team as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 derive(hashKey = toBinary(md5(Name+Country+Team)),",
+						"          lastModifiedDate = currentDate()) ~> derivedColumn1",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          playerID as integer,",
+						"          Name as string,",
+						"          Age as integer,",
+						"          Country as string,",
+						"          Team as string,",
+						"          lastModifiedDate as date,",
+						"          hashKey as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DelimitedText1",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "DelimitedText1",
+								"type": "DatasetReference"
+							},
+							"name": "source2"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DelimitedText2",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Region as string,",
+						"          Country as string,",
+						"          {Item Type} as string,",
+						"          {Sales Channel} as string,",
+						"          {Order Priority} as string,",
+						"          {Order Date} as string,",
+						"          {Order ID} as string,",
+						"          {Ship Date} as string,",
+						"          {Units Sold} as string,",
+						"          {Unit Price} as string,",
+						"          {Unit Cost} as string,",
+						"          {Total Revenue} as string,",
+						"          {Total Cost} as string,",
+						"          {Total Profit} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source(output(",
+						"          Region as string,",
+						"          Country as string,",
+						"          {Item Type} as string,",
+						"          {Sales Channel} as string,",
+						"          {Order Priority} as string,",
+						"          {Order Date} as string,",
+						"          {Order ID} as string,",
+						"          {Ship Date} as string,",
+						"          {Units Sold} as string,",
+						"          {Unit Price} as string,",
+						"          {Unit Cost} as string,",
+						"          {Total Revenue} as string,",
+						"          {Total Cost} as string,",
+						"          {Total Profit} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source2",
+						"source1, source2 join(source1@{Order ID} == source2@{Order ID},",
+						"     joinType:'right',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          Region = source1@Region,",
+						"          Country = source1@Country,",
+						"          {Item Type} = source1@{Item Type},",
+						"          {Sales Channel} = source1@{Sales Channel},",
+						"          {Order Priority} = source1@{Order Priority},",
+						"          {Order ID} = source1@{Order ID},",
+						"          {Ship Date} = source1@{Ship Date},",
+						"          {Units Sold} = source1@{Units Sold},",
+						"          {Unit Price} = source1@{Unit Price},",
+						"          {Unit Cost} = source1@{Unit Cost},",
+						"          {Total Revenue} = source1@{Total Revenue},",
+						"          {Total Cost} = source1@{Total Cost},",
+						"          {Total Profit} = source1@{Total Profit},",
+						"          Region = source2@Region,",
+						"          Country = source2@Country,",
+						"          {Item Type} = source2@{Item Type},",
+						"          {Sales Channel} = source2@{Sales Channel},",
+						"          {Order Priority} = source2@{Order Priority},",
+						"          {Order Date} = source2@{Order Date},",
+						"          {Order ID} = source2@{Order ID},",
+						"          {Ship Date} = source2@{Ship Date},",
+						"          {Units Sold} = source2@{Units Sold},",
+						"          {Unit Price} = source2@{Unit Price},",
+						"          {Unit Cost} = source2@{Unit Cost},",
+						"          {Total Revenue} = source2@{Total Revenue},",
+						"          {Total Cost} = source2@{Total Cost},",
+						"          {Total Profit} = source2@{Total Profit}",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/dataflow2')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -116,6 +305,145 @@
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/incrementalDataflow_upsert')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_NewFile_ADLS",
+								"type": "DatasetReference"
+							},
+							"name": "newFileInput"
+						},
+						{
+							"dataset": {
+								"referenceName": "runningDataIncrementalLoad_DS",
+								"type": "DatasetReference"
+							},
+							"name": "existingDatainDB"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DS_ADF_TO_SQLDB",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_ADF_TO_SQLDB",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
+						}
+					],
+					"transformations": [
+						{
+							"name": "addHashKeytoNewData"
+						},
+						{
+							"name": "Join2DataSource"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "alterRow1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          playerID as string,",
+						"          Name as string,",
+						"          Age as string,",
+						"          Country as string,",
+						"          Team as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> newFileInput",
+						"source(output(",
+						"          playerID as integer,",
+						"          Name as string,",
+						"          Age as integer,",
+						"          Country as string,",
+						"          Team as string,",
+						"          lastModifiedDate as date,",
+						"          hashKey as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> existingDatainDB",
+						"newFileInput derive(hashKeyNew = toBinary(md5(Name+Country+Team)),",
+						"          lastModifiedDateNew = currentDate()) ~> addHashKeytoNewData",
+						"addHashKeytoNewData, existingDatainDB lookup(toInteger(newFileInput@playerID) == existingDatainDB@playerID,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> Join2DataSource",
+						"Join2DataSource split(!isNull(existingDatainDB@playerID)&&notEquals(hashKey, toString(hashKeyNew)),",
+						"     isNull(existingDatainDB@playerID),",
+						"     disjoint: false) ~> split1@(Update, Insert, Default)",
+						"split1@Update alterRow(upsertIf(true())) ~> alterRow1",
+						"split1@Insert sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          playerID as integer,",
+						"          Name as string,",
+						"          Age as integer,",
+						"          Country as string,",
+						"          Team as string,",
+						"          lastModifiedDate as date,",
+						"          hashKey as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          playerID = split1@Insert@playerID,",
+						"          Name = split1@Insert@Name,",
+						"          Age = split1@Insert@Age,",
+						"          Country = split1@Insert@Country,",
+						"          Team = split1@Insert@Team,",
+						"          lastModifiedDate = lastModifiedDateNew,",
+						"          hashKey = hashKeyNew",
+						"     )) ~> sink1",
+						"alterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          playerID as integer,",
+						"          Name as string,",
+						"          Age as integer,",
+						"          Country as string,",
+						"          Team as string,",
+						"          lastModifiedDate as date,",
+						"          hashKey as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink2"
 					]
 				}
 			},
@@ -524,6 +852,102 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/incrementallly_insert_data_from_two_sources')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/incrementalDataLoad_s3')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "incrementalDataflow_upsert",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"newFileInput": {},
+									"existingDatainDB": {},
+									"sink1": {},
+									"sink2": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/incrementalDataflow_upsert')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ingesting_data_for_type2_incremental_pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "DataIngestion_Stage1_DataFlow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataIngestion_Stage1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataIngestion_Stage1')]"
 			]
 		},
 		{

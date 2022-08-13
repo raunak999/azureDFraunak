@@ -13,6 +13,36 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat(formatDateTime(utcnow(),'yyyy'),'/',formatDateTime(utcnow(),'MM'),'/',formatDateTime(utcnow(),'dd'))",
+							"type": "Expression"
+						},
+						"folderPath": "landing",
+						"fileSystem": "datastore"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DelimitedText3')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -518,6 +548,48 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/runningDataIncrementalLoad_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_AzureSQLDB",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "playerID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Name",
+						"type": "varchar"
+					},
+					{
+						"name": "Age",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Country",
+						"type": "varchar"
+					},
+					{
+						"name": "Team",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "playerInfo"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/storeData_ADLS_highWaterMark_DS')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -762,75 +834,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DelimitedText3')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ingesting_data_for_type2_incremental_pipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "DS_ADLS_TO_ADF",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "DS_ADF_TO_SQLDB",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/pipeline2')]",
@@ -1212,128 +1215,6 @@
 						"startTime": "2022-07-24T06:31:00Z",
 						"timeZone": "UTC"
 					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "DelimitedText1",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						},
-						{
-							"dataset": {
-								"referenceName": "DelimitedText1",
-								"type": "DatasetReference"
-							},
-							"name": "source2"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "DelimitedText2",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "join1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          Region as string,",
-						"          Country as string,",
-						"          {Item Type} as string,",
-						"          {Sales Channel} as string,",
-						"          {Order Priority} as string,",
-						"          {Order Date} as string,",
-						"          {Order ID} as string,",
-						"          {Ship Date} as string,",
-						"          {Units Sold} as string,",
-						"          {Unit Price} as string,",
-						"          {Unit Cost} as string,",
-						"          {Total Revenue} as string,",
-						"          {Total Cost} as string,",
-						"          {Total Profit} as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> source1",
-						"source(output(",
-						"          Region as string,",
-						"          Country as string,",
-						"          {Item Type} as string,",
-						"          {Sales Channel} as string,",
-						"          {Order Priority} as string,",
-						"          {Order Date} as string,",
-						"          {Order ID} as string,",
-						"          {Ship Date} as string,",
-						"          {Units Sold} as string,",
-						"          {Unit Price} as string,",
-						"          {Unit Cost} as string,",
-						"          {Total Revenue} as string,",
-						"          {Total Cost} as string,",
-						"          {Total Profit} as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> source2",
-						"source1, source2 join(source1@{Order ID} == source2@{Order ID},",
-						"     joinType:'right',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> join1",
-						"join1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          Region = source1@Region,",
-						"          Country = source1@Country,",
-						"          {Item Type} = source1@{Item Type},",
-						"          {Sales Channel} = source1@{Sales Channel},",
-						"          {Order Priority} = source1@{Order Priority},",
-						"          {Order ID} = source1@{Order ID},",
-						"          {Ship Date} = source1@{Ship Date},",
-						"          {Units Sold} = source1@{Units Sold},",
-						"          {Unit Price} = source1@{Unit Price},",
-						"          {Unit Cost} = source1@{Unit Cost},",
-						"          {Total Revenue} = source1@{Total Revenue},",
-						"          {Total Cost} = source1@{Total Cost},",
-						"          {Total Profit} = source1@{Total Profit},",
-						"          Region = source2@Region,",
-						"          Country = source2@Country,",
-						"          {Item Type} = source2@{Item Type},",
-						"          {Sales Channel} = source2@{Sales Channel},",
-						"          {Order Priority} = source2@{Order Priority},",
-						"          {Order Date} = source2@{Order Date},",
-						"          {Order ID} = source2@{Order ID},",
-						"          {Ship Date} = source2@{Ship Date},",
-						"          {Units Sold} = source2@{Units Sold},",
-						"          {Unit Price} = source2@{Unit Price},",
-						"          {Unit Cost} = source2@{Unit Cost},",
-						"          {Total Revenue} = source2@{Total Revenue},",
-						"          {Total Cost} = source2@{Total Cost},",
-						"          {Total Profit} = source2@{Total Profit}",
-						"     )) ~> sink1"
-					]
 				}
 			},
 			"dependsOn": []
