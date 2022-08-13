@@ -1,0 +1,68 @@
+{
+	"name": "incrementalDataflow_upsert",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_NewFile_ADLS",
+						"type": "DatasetReference"
+					},
+					"name": "newFileInput"
+				},
+				{
+					"dataset": {
+						"referenceName": "runningDataIncrementalLoad_DS",
+						"type": "DatasetReference"
+					},
+					"name": "existingDatainDB"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "addHashKeytoNewData"
+				},
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "split1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          playerID as string,",
+				"          Name as string,",
+				"          Age as string,",
+				"          Country as string,",
+				"          Team as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> newFileInput",
+				"source(output(",
+				"          playerID as integer,",
+				"          Name as string,",
+				"          Age as integer,",
+				"          Country as string,",
+				"          Team as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> existingDatainDB",
+				"newFileInput derive(hashKey = toBinary(md5(Name+Country+Team)),",
+				"          lastModifiedDate = currentDate()) ~> addHashKeytoNewData",
+				"addHashKeytoNewData, existingDatainDB lookup(toInteger(newFileInput@playerID) == existingDatainDB@playerID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 split(ERROR_FUNCTION(''),",
+				"     ERROR_FUNCTION(''),",
+				"     disjoint: false) ~> split1@(Update, Insert, Default)"
+			]
+		}
+	}
+}
