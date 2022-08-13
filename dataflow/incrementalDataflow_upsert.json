@@ -19,13 +19,21 @@
 					"name": "existingDatainDB"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_ADF_TO_SQLDB",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "addHashKeytoNewData"
 				},
 				{
-					"name": "lookup1"
+					"name": "Join2DataSource"
 				},
 				{
 					"name": "split1"
@@ -53,15 +61,43 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> existingDatainDB",
-				"newFileInput derive(hashKey = toBinary(md5(Name+Country+Team)),",
-				"          lastModifiedDate = currentDate()) ~> addHashKeytoNewData",
+				"newFileInput derive(hashKeyNew = toBinary(md5(Name+Country+Team)),",
+				"          lastModifiedDateNew = currentDate()) ~> addHashKeytoNewData",
 				"addHashKeytoNewData, existingDatainDB lookup(toInteger(newFileInput@playerID) == existingDatainDB@playerID,",
 				"     multiple: false,",
 				"     pickup: 'any',",
-				"     broadcast: 'auto')~> lookup1",
-				"lookup1 split(ERROR_FUNCTION(''),",
-				"     ERROR_FUNCTION(''),",
-				"     disjoint: false) ~> split1@(Update, Insert, Default)"
+				"     broadcast: 'auto')~> Join2DataSource",
+				"Join2DataSource split(!isNull(newFileInput@playerID)&&notEquals(hashKey, hashKeyNew),",
+				"     isNull(newFileInput@playerID),",
+				"     disjoint: false) ~> split1@(Update, Insert, Default)",
+				"split1@Insert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          playerID as integer,",
+				"          Name as string,",
+				"          Age as integer,",
+				"          Country as string,",
+				"          Team as string,",
+				"          lastModifiedDate as date,",
+				"          hashKey as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          playerID = split1@Insert@playerID,",
+				"          Name = split1@Insert@Name,",
+				"          Age = split1@Insert@Age,",
+				"          Country = split1@Insert@Country,",
+				"          Team = split1@Insert@Team,",
+				"          lastModifiedDate = lastModifiedDateNew,",
+				"          hashKey = hashKeyNew",
+				"     )) ~> sink1"
 			]
 		}
 	}

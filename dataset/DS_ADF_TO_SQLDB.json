@@ -1,0 +1,47 @@
+{
+	"name": "DS_ADF_TO_SQLDB",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_AzureSQLDB",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "playerID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Name",
+				"type": "varchar"
+			},
+			{
+				"name": "Age",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Country",
+				"type": "varchar"
+			},
+			{
+				"name": "Team",
+				"type": "varchar"
+			},
+			{
+				"name": "lastModifiedDate",
+				"type": "date"
+			},
+			{
+				"name": "hashKey",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "playerInfo"
+		}
+	}
+}
